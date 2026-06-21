@@ -1,0 +1,6 @@
+{
+  "name": "Mobile Gaming Portal Demo",
+  "description": "Ultra-premium mobile-first gaming portal UI with interactive slots, mock wallet management, agent and admin routing, and a high-fidelity dark gold aesthetic.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
