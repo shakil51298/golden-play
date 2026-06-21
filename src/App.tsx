@@ -91,6 +91,17 @@ export default function App() {
     return (stored === 'light' || stored === 'dark') ? stored : 'dark';
   });
 
+  const getOrderedActiveBanners = () => {
+    return db.getData<Banner>('playportal_banners_v1')
+      .filter(b => b.isActive)
+      .sort((a, b) => {
+        const orderA = Number.isFinite(a.displayOrder) ? Number(a.displayOrder) : Number.MAX_SAFE_INTEGER;
+        const orderB = Number.isFinite(b.displayOrder) ? Number(b.displayOrder) : Number.MAX_SAFE_INTEGER;
+        if (orderA !== orderB) return orderA - orderB;
+        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+      });
+  };
+
   useEffect(() => {
     if (theme === 'light') {
       document.documentElement.classList.add('light');
@@ -109,7 +120,7 @@ export default function App() {
     // Load static data. When Supabase is configured, public banners/promos come
     // from admin-controlled Supabase rows, not this browser's demo localStorage.
     setGames(db.getData<Game>('playportal_games_v1'));
-    setBanners(supabaseConfigured ? [] : db.getData<Banner>('playportal_banners_v1').filter(b => b.isActive));
+    setBanners(supabaseConfigured ? [] : getOrderedActiveBanners());
     setPromotions(supabaseConfigured ? [] : db.getData<Promotion>('playportal_promotions_v1').filter(p => p.isActive));
     setAnnouncements(db.getAnnouncements());
 
@@ -123,7 +134,7 @@ export default function App() {
 
     // Listen to updates from admin panel in same/different window
     const handleLobbyContentUpdate = () => {
-      const freshBanners = db.getData<Banner>('playportal_banners_v1').filter(b => b.isActive);
+      const freshBanners = getOrderedActiveBanners();
       setBanners(freshBanners);
       setActiveBannerIdx(current => freshBanners.length > 0 ? Math.min(current, freshBanners.length - 1) : 0);
       setPromotions(db.getData<Promotion>('playportal_promotions_v1').filter(p => p.isActive));

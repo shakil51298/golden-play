@@ -1290,6 +1290,9 @@ export default function AdminPanel({ onBalanceChange, onClose }: AdminPanelProps
                           <div key={item.id} className="bg-[#0c132a] border border-blue-950/80 p-2.5 rounded-lg text-xs space-y-1.5 relative group">
                             <div className="flex justify-between items-start gap-1">
                               <div>
+                                <span className="inline-block mb-1 rounded bg-yellow-400 px-1.5 py-0.5 text-[8px] font-black text-slate-950">
+                                  Slide #{item.displayOrder || banners.findIndex((banner) => banner.id === item.id) + 1}
+                                </span>
                                 <h5 className="font-bold text-slate-200 line-clamp-1 leading-tight">
                                   {item.titleLine1 || item.title || 'Untitled Banner'}
                                 </h5>

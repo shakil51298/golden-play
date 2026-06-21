@@ -77,6 +77,8 @@ export interface Banner {
   titleFontSize?: string;
   offerMechanicsOneLine?: string;
   mechanicsFontSize?: number;
+  displayOrder?: number;
+  createdAt?: string;
 }
 
 export interface Promotion {
@@ -121,4 +123,3 @@ export interface PortalAnnouncement {
   order: number;
   badge?: string; // Optional overlay badge e.g. "HOT", "NEW"
 }
-

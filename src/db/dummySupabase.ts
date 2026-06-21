@@ -632,20 +632,29 @@ class DummySupabaseClient {
     }
     if (key === KEYS.BANNERS) {
       let changed = false;
-      const normalized = parsed.map((banner: any) => {
-        if (banner?.templateType === 'full-image') {
-          const fullImage = banner.imageLink || banner.imageUrl;
-          if (fullImage && (banner.imageLink !== fullImage || banner.imageUrl !== fullImage)) {
+      const normalized = parsed.map((banner: any, index: number) => {
+        let nextBanner = banner;
+        if (banner && !banner.displayOrder) {
+          changed = true;
+          nextBanner = {
+            ...nextBanner,
+            displayOrder: index + 1,
+            createdAt: nextBanner.createdAt || new Date(Date.now() + index * 1000).toISOString(),
+          };
+        }
+        if (nextBanner?.templateType === 'full-image') {
+          const fullImage = nextBanner.imageLink || nextBanner.imageUrl;
+          if (fullImage && (nextBanner.imageLink !== fullImage || nextBanner.imageUrl !== fullImage)) {
             changed = true;
             return {
-              ...banner,
+              ...nextBanner,
               imageUrl: fullImage,
               imageLink: fullImage,
-              bgGradient: banner.bgGradient || 'transparent',
+              bgGradient: nextBanner.bgGradient || 'transparent',
             };
           }
         }
-        return banner;
+        return nextBanner;
       });
       if (changed) {
         localStorage.setItem(key, JSON.stringify(normalized));
@@ -1079,6 +1088,8 @@ class DummySupabaseClient {
       titleFontSize: banner.titleFontSize,
       offerMechanicsOneLine: banner.offerMechanicsOneLine,
       mechanicsFontSize: banner.mechanicsFontSize,
+      displayOrder: banner.displayOrder || banners.length + 1,
+      createdAt: new Date().toISOString(),
     });
     this.setData(KEYS.BANNERS, banners);
   }

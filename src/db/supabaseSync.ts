@@ -77,6 +77,7 @@ export class SupabaseSyncService {
     let offerMechanicsOneLine = '';
     let mechanicsFontSize = 14;
     let bgGradient = '';
+    let displayOrder = Number.MAX_SAFE_INTEGER;
 
     if (b.subtitle && b.subtitle.startsWith('{')) {
       try {
@@ -89,6 +90,7 @@ export class SupabaseSyncService {
         offerMechanicsOneLine = metadata.m || '';
         mechanicsFontSize = metadata.mfs || 14;
         bgGradient = metadata.bg || '';
+        displayOrder = Number(metadata.o || Number.MAX_SAFE_INTEGER);
       } catch (e) {
         console.error('Failed to parse banner metadata JSON:', e);
       }
@@ -109,7 +111,18 @@ export class SupabaseSyncService {
       offerMechanicsOneLine,
       mechanicsFontSize,
       bgGradient,
+      displayOrder,
+      createdAt: b.created_at,
     };
+  }
+
+  private sortBannersForCarousel(banners: Banner[]): Banner[] {
+    return [...banners].sort((a, b) => {
+      const orderA = Number.isFinite(a.displayOrder) ? Number(a.displayOrder) : Number.MAX_SAFE_INTEGER;
+      const orderB = Number.isFinite(b.displayOrder) ? Number(b.displayOrder) : Number.MAX_SAFE_INTEGER;
+      if (orderA !== orderB) return orderA - orderB;
+      return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+    });
   }
 
   /**
@@ -126,7 +139,10 @@ export class SupabaseSyncService {
 
       if (bError) throw new Error(`Banners Retrieve Failed: ${bError.message}`);
 
-      localStorage.setItem('playportal_banners_v1', JSON.stringify((bData || []).map((b) => this.mapSupabaseBanner(b))));
+      localStorage.setItem(
+        'playportal_banners_v1',
+        JSON.stringify(this.sortBannersForCarousel((bData || []).map((b) => this.mapSupabaseBanner(b))))
+      );
 
       const { data: promoData, error: promoError } = await supabaseClient
         .from('promotions')
@@ -159,7 +175,8 @@ export class SupabaseSyncService {
   }
 
   private mapLocalBannersForSupabase(banners: Banner[]) {
-    return banners.map(b => {
+    return banners.map((b, index) => {
+      const displayOrder = b.displayOrder || index + 1;
       const metadata = {
         s: b.subtitle || '',
         t: b.templateType || 'full-image',
@@ -169,6 +186,7 @@ export class SupabaseSyncService {
         m: b.offerMechanicsOneLine || '',
         mfs: b.mechanicsFontSize || 14,
         bg: b.bgGradient || '',
+        o: displayOrder,
       };
       const imageUrlInDb = b.templateType === 'full-image'
         ? (b.imageLink || b.imageUrl || '')
@@ -181,7 +199,7 @@ export class SupabaseSyncService {
         image_url: imageUrlInDb,
         promo_code: b.promoCode || null,
         is_active: b.isActive,
-        created_at: new Date().toISOString()
+        created_at: b.createdAt || new Date(Date.now() + index * 1000).toISOString()
       };
     });
   }
@@ -498,7 +516,7 @@ export class SupabaseSyncService {
       if (bError) throw new Error(`Banners Retrieve Failed: ${bError.message}`);
 
       if (bData && bData.length > 0) {
-        const localBanners: Banner[] = bData.map((b) => this.mapSupabaseBanner(b));
+        const localBanners: Banner[] = this.sortBannersForCarousel(bData.map((b) => this.mapSupabaseBanner(b)));
         localStorage.setItem('playportal_banners_v1', JSON.stringify(localBanners));
       }
 
