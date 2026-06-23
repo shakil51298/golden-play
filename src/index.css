@@ -1,5 +1,32 @@
 @import "tailwindcss";
 
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  min-width: 0;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
 :root {
   --app-bg: #070b19;
   --app-text: #ffffff;
@@ -221,4 +248,3 @@
 .light .preserve-dark-bg-text .text-purple-300 { color: #d8b4fe !important; }
 .light .preserve-dark-bg-text .text-purple-305 { color: #c084fc !important; }
 .light .preserve-dark-bg-text .text-purple-400 { color: #c084fc !important; }
-

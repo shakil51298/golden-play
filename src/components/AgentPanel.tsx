@@ -107,23 +107,23 @@ export default function AgentPanel({ agentId, onBalanceChange, onClose }: AgentP
   const totalPlayerDeposits = referredTxs.reduce((sum, current) => sum + current.amount, 0);
 
   return (
-    <div id="agent_dashboard_container" className="fixed inset-0 z-50 bg-[#060a17]/95 flex items-center justify-center p-4 backdrop-blur-md overflow-y-auto">
-      <div className="bg-[#0b1229] border border-blue-900 bg-linear-to-b from-[#0e1938] to-[#070b18] w-full max-w-4xl rounded-2xl p-5 shadow-[0_0_35px_rgba(234,179,8,0.15)] text-white relative">
+    <div id="agent_dashboard_container" className="fixed inset-0 z-50 bg-[#060a17]/95 flex items-start sm:items-center justify-center p-2.5 sm:p-4 backdrop-blur-md overflow-y-auto">
+      <div className="bg-[#0b1229] border border-blue-900 bg-linear-to-b from-[#0e1938] to-[#070b18] w-full max-w-4xl rounded-2xl p-3.5 sm:p-5 shadow-[0_0_35px_rgba(234,179,8,0.15)] text-white relative my-auto">
         
         {/* Header section */}
-        <div className="flex justify-between items-center mb-5 border-b border-blue-950 pb-3">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-5 border-b border-blue-950 pb-3">
+          <div className="flex min-w-0 items-center gap-2">
             <span className="p-2 bg-yellow-400/10 text-yellow-500 rounded-lg">
               <Sparkles size={20} className="animate-pulse" />
             </span>
             <div>
-              <h2 className="text-lg font-black tracking-widest uppercase">Golden Agent Broker Desk</h2>
+              <h2 className="text-base sm:text-lg font-black tracking-widest uppercase leading-tight">Golden Agent Broker Desk</h2>
               <p className="text-[10px] text-yellow-400 font-mono">PARTNER LEVEL: VIP COMMISSION COMMERCE</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-1 px-3 bg-blue-950 hover:bg-blue-900 text-blue-400 rounded-md border border-blue-900 text-xs transition-colors"
+            className="w-full sm:w-auto p-2 sm:p-1 sm:px-3 bg-blue-950 hover:bg-blue-900 text-blue-400 rounded-md border border-blue-900 text-xs transition-colors"
           >
             DISMISS CONSOLE
           </button>
@@ -142,10 +142,10 @@ export default function AgentPanel({ agentId, onBalanceChange, onClose }: AgentP
         )}
 
         {/* Stats Summary Panel */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        <div className="grid grid-cols-1 min-[390px]:grid-cols-2 md:grid-cols-4 gap-3 mb-5">
           <div className="bg-[#060a17] p-3 rounded-lg border border-blue-950/40">
             <span className="text-[9px] text-slate-500 block uppercase font-bold">Unpaid Commissions</span>
-            <span className="text-base text-yellow-400 font-black font-mono">৳{agentWallet.balance.toLocaleString()}</span>
+            <span className="text-base text-yellow-400 font-black font-mono break-all">৳{agentWallet.balance.toLocaleString()}</span>
           </div>
 
           <div className="bg-[#060a17] p-3 rounded-lg border border-blue-950/40">
@@ -155,12 +155,12 @@ export default function AgentPanel({ agentId, onBalanceChange, onClose }: AgentP
 
           <div className="bg-[#060a17] p-3 rounded-lg border border-blue-950/40">
             <span className="text-[9px] text-slate-500 block uppercase font-bold">Player Network Payments</span>
-            <span className="text-base text-green-400 font-black font-mono">৳{totalPlayerDeposits.toLocaleString()}</span>
+            <span className="text-base text-green-400 font-black font-mono break-all">৳{totalPlayerDeposits.toLocaleString()}</span>
           </div>
 
           <div className="bg-[#060a17] p-3 rounded-lg border border-blue-950/40">
             <span className="text-[9px] text-slate-500 block uppercase font-bold">Withdrawn broker cash</span>
-            <span className="text-base text-slate-300 font-black font-mono">৳{totalCommPaidOut.toLocaleString()}</span>
+            <span className="text-base text-slate-300 font-black font-mono break-all">৳{totalCommPaidOut.toLocaleString()}</span>
           </div>
         </div>
 
@@ -173,16 +173,16 @@ export default function AgentPanel({ agentId, onBalanceChange, onClose }: AgentP
             <p className="text-[11px] text-slate-400 leading-relaxed">Referral code: <span className="text-white font-mono font-bold">{agentProfile.referralCode}</span>. Earn 10% cash bonus on all payments completed by profiles registered using this code!</p>
           </div>
 
-          <div className="flex bg-[#060a17] rounded-lg border border-blue-900 overflow-hidden text-xs w-full md:w-auto shrink-0 font-mono">
+          <div className="flex flex-col min-[430px]:flex-row bg-[#060a17] rounded-lg border border-blue-900 overflow-hidden text-xs w-full md:w-auto shrink-0 font-mono">
             <input
               type="text"
               readOnly
               value={`${window.location.origin}?ref=${agentProfile.referralCode}`}
-              className="bg-transparent px-3 py-2 text-slate-300 border-none focus:outline-hidden text-xs max-w-sm"
+              className="w-full min-w-0 bg-transparent px-3 py-2 text-slate-300 border-none focus:outline-hidden text-xs sm:max-w-sm"
             />
             <button
               onClick={copyRefLink}
-              className="px-4 bg-yellow-400 text-slate-950 font-black flex items-center gap-1 hover:bg-yellow-300 shrink-0 cursor-pointer"
+              className="px-4 py-2 bg-yellow-400 text-slate-950 font-black flex items-center justify-center gap-1 hover:bg-yellow-300 shrink-0 cursor-pointer"
             >
               {copiedLink ? <Check size={14} /> : <Copy size={14} />}
               {copiedLink ? 'LINK COPIED' : 'COPY'}
@@ -267,10 +267,10 @@ export default function AgentPanel({ agentId, onBalanceChange, onClose }: AgentP
                   <p className="text-center text-xs text-slate-500 py-6">No commission share payouts verified on ledger yet.</p>
                 ) : (
                   commTransactions.map((tx) => (
-                    <div key={tx.id} className="bg-[#0b1229] p-2 rounded border border-blue-950/60 flex justify-between items-center">
-                      <div>
+                    <div key={tx.id} className="bg-[#0b1229] p-2 rounded border border-blue-950/60 flex flex-col min-[430px]:flex-row min-[430px]:justify-between min-[430px]:items-center gap-2">
+                      <div className="min-w-0">
                         <span className="text-yellow-400 font-bold">+{tx.amount.toLocaleString()}.00 USD</span>
-                        <p className="text-[9px] text-slate-500">{tx.notes}</p>
+                        <p className="text-[9px] text-slate-500 break-words">{tx.notes}</p>
                       </div>
                       <span className="text-[9px] text-slate-500">{new Date(tx.createdAt).toLocaleDateString()}</span>
                     </div>
@@ -294,12 +294,12 @@ export default function AgentPanel({ agentId, onBalanceChange, onClose }: AgentP
                     const depositsAmt = playerTxs.reduce((sum, current) => sum + current.amount, 0);
 
                     return (
-                      <div key={p.id} className="bg-[#0b1229] p-2 rounded border border-blue-950/60 flex justify-between items-center">
-                        <div>
+                      <div key={p.id} className="bg-[#0b1229] p-2 rounded border border-blue-950/60 flex flex-col min-[430px]:flex-row min-[430px]:justify-between min-[430px]:items-center gap-2">
+                        <div className="min-w-0">
                           <span className="text-slate-200 font-bold">👤 @{p.username}</span>
                           <span className="text-[9px] text-slate-500 block">Date: {new Date(p.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <div className="text-right">
+                        <div className="text-left min-[430px]:text-right">
                           <span className="text-green-400 font-bold">৳{depositsAmt.toLocaleString()} deposited</span>
                           <span className="text-[9px] text-slate-500 block">Est comm: ৳{(depositsAmt * 0.1).toLocaleString()} BDT</span>
                         </div>

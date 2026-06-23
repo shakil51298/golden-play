@@ -335,6 +335,9 @@ const getInitialGames = (): Game[] => [
 ];
 
 const getInitialUsersAndProfiles = (): { profiles: UserProfile[]; wallets: Wallet[] } => {
+  const profileAvatar = (seed: string) =>
+    `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(seed)}&backgroundColor=ffd5dc,b6e3f4,c0aede,ffdfbf`;
+
   const profiles: UserProfile[] = [
     {
       id: 'usr-admin',
@@ -342,7 +345,7 @@ const getInitialUsersAndProfiles = (): { profiles: UserProfile[]; wallets: Walle
       phone: '+18885551212',
       email: 'sfautomobile.25@gmail.com',
       role: 'admin',
-      avatarUrl: '⚡',
+      avatarUrl: profileAvatar('admin-master-gold'),
       referralCode: 'PORTAL_VIP',
       password: 'admin123',
       createdAt: new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString(),
@@ -353,7 +356,7 @@ const getInitialUsersAndProfiles = (): { profiles: UserProfile[]; wallets: Walle
       phone: '+63912345678',
       email: 'agent77@portal.com',
       role: 'agent',
-      avatarUrl: '💎',
+      avatarUrl: profileAvatar('agent77-diamond'),
       referralCode: 'GOLD77',
       referredByCode: 'PORTAL_VIP',
       password: 'agent123',
@@ -365,7 +368,7 @@ const getInitialUsersAndProfiles = (): { profiles: UserProfile[]; wallets: Walle
       phone: '+63911122233',
       email: 'player1@portal.com',
       role: 'user',
-      avatarUrl: '🦊',
+      avatarUrl: profileAvatar('player1-lucky'),
       referralCode: 'PLAYX9',
       referredByCode: 'GOLD77',
       password: 'player123',
@@ -756,6 +759,7 @@ class DummySupabaseClient {
     }
 
     const newId = `usr-${Math.random().toString(36).substr(2, 9)}`;
+    const avatarSeed = `${normUsername}-${Math.random().toString(36).slice(2, 8)}`;
     const newProfile: UserProfile = {
       id: newId,
       username: normUsername,
@@ -763,7 +767,7 @@ class DummySupabaseClient {
       phone: data.phone,
       role: 'user', // normal user cannot select role, always registered as 'user'
       password: data.password || 'player123',
-      avatarUrl: ['🦊', '🐱', '🐼', '🐯', '🐸', '🐨'][Math.floor(Math.random() * 6)],
+      avatarUrl: `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(avatarSeed)}&backgroundColor=ffd5dc,b6e3f4,c0aede,ffdfbf`,
       referralCode: Math.random().toString(36).substr(2, 6).toUpperCase(),
       referredByCode: data.referredByCode || undefined,
       createdAt: new Date().toISOString(),

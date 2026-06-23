@@ -85,7 +85,7 @@ export default function GameProviders() {
   ];
 
   return (
-    <div id="game_providers_section" className="space-y-3.5 pt-5 border-t border-[#1d333a]/30">
+    <div id="game_providers_section" className="w-full min-w-0 space-y-3.5 pt-5 border-t border-[#1d333a]/30">
       <div className="flex items-center gap-2 border-b border-[#1d333a]/40 pb-2">
         <span className="text-base">🎮</span>
         <h3 className="text-[13px] font-black uppercase text-slate-250 tracking-wider font-sans">
@@ -93,13 +93,13 @@ export default function GameProviders() {
         </h3>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(118px,1fr))] sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2">
         {providers.map((p, idx) => (
           <div 
             key={`${p.name}-${idx}`}
-            className={`flex flex-col items-center justify-center p-2 rounded-lg border ${p.borderColor} ${p.bg} hover:border-yellow-400/40 hover:scale-[1.02] active:scale-98 transition-all h-[54px] text-center select-none cursor-pointer group`}
+            className={`min-w-0 flex flex-col items-center justify-center p-2 rounded-lg border ${p.borderColor} ${p.bg} hover:border-yellow-400/40 hover:scale-[1.02] active:scale-98 transition-all min-h-[54px] text-center select-none cursor-pointer group`}
           >
-            <span className={`text-[12px] font-black tracking-tight ${p.color} transition-colors group-hover:text-yellow-300 leading-none`}>
+            <span className={`max-w-full truncate text-[11px] sm:text-[12px] font-black tracking-tight ${p.color} transition-colors group-hover:text-yellow-300 leading-none`}>
               {p.logoText}
             </span>
             {p.subText && (

@@ -21,11 +21,35 @@ import CustomerAnnouncementModal from './components/CustomerAnnouncementModal';
 import RecentWinners from './components/RecentWinners';
 import InfoAccordions from './components/InfoAccordions';
 import GameProviders from './components/GameProviders';
+import PersonalCenterModal from './components/PersonalCenterModal';
 import { 
   Gamepad2, Gift, Wallet2, Users, ShieldAlert, Sparkles, Search, Heart, 
   Play, HelpCircle, LogOut, LogIn, ChevronLeft, ChevronRight, MessageCircle, AlertCircle, TrendingUp,
-  Volume2, Sun, Moon, Crown, Headphones, Download, ChevronDown, ChevronUp, Coins, Menu, X
+  Volume2, Sun, Moon, Crown, Headphones, Download, ChevronDown, ChevronUp, Coins, Menu, X,
+  Eye, EyeOff, RefreshCw, Pencil, UserCircle, ReceiptText, ArrowUpCircle, ArrowDownCircle
 } from 'lucide-react';
+
+const avatarSeeds = [
+  'luna-vip', 'ruby-crown', 'maya-gold', 'nora-spin', 'aria-luck', 'zara-play',
+  'kai-royal', 'mira-coin', 'sana-star', 'ravi-ace', 'leo-jackpot', 'tara-win'
+];
+
+const buildAvatarUrl = (seed: string) => {
+  const safeSeed = encodeURIComponent(seed);
+  return `https://api.dicebear.com/9.x/adventurer/svg?seed=${safeSeed}&backgroundColor=ffd5dc,b6e3f4,c0aede,ffdfbf`;
+};
+
+const getProfileAvatarUrl = (profile: UserProfile) => {
+  if (profile.avatarUrl && /^(https?:|data:)/.test(profile.avatarUrl)) {
+    return profile.avatarUrl;
+  }
+  return buildAvatarUrl(`${profile.id}-${profile.username}`);
+};
+
+const randomAvatarUrl = (profile: UserProfile) => {
+  const seed = avatarSeeds[Math.floor(Math.random() * avatarSeeds.length)];
+  return buildAvatarUrl(`${profile.id}-${seed}-${Date.now()}`);
+};
 
 export default function App() {
   // Collapsed Sidebar layout states
@@ -36,6 +60,10 @@ export default function App() {
   const [isDownloadOpen, setIsDownloadOpen] = useState<boolean>(false);
   const [isPromoAccordionExpanded, setIsPromoAccordionExpanded] = useState<boolean>(true);
   const [currentLanguage, setCurrentLanguage] = useState<'en' | 'bn' | 'hi'>('bn');
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState<boolean>(false);
+  const [isPersonalCenterOpen, setIsPersonalCenterOpen] = useState<boolean>(false);
+  const [personalCenterInitialMenu, setPersonalCenterInitialMenu] = useState<'profile' | 'deposit' | 'withdraw' | 'history' | 'invite' | 'alerts'>('profile');
+  const [isBalanceVisible, setIsBalanceVisible] = useState<boolean>(true);
 
   // Authentication & Profile states
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
@@ -249,9 +277,40 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    setIsProfileMenuOpen(false);
+    setIsPersonalCenterOpen(false);
     db.logout();
     syncActiveUser();
     setCurrentViewTab('lobby');
+  };
+
+  const openPersonalCenter = (menu: typeof activeDashboardSubMenu = 'profile') => {
+    setPersonalCenterInitialMenu(menu);
+    setIsPersonalCenterOpen(true);
+    setIsProfileMenuOpen(false);
+    setIsAdminOpen(false);
+    setIsAgentOpen(false);
+  };
+
+  const routeToDashboard = (menu: typeof activeDashboardSubMenu) => {
+    setActiveDashboardSubMenu(menu);
+    setCurrentViewTab('wallet');
+    setIsProfileMenuOpen(false);
+    setIsPersonalCenterOpen(false);
+    setIsAdminOpen(false);
+    setIsAgentOpen(false);
+  };
+
+  const refreshCurrentAvatar = () => {
+    if (!currentUser) return;
+    const profiles = db.getData<UserProfile>('playportal_profiles_v1');
+    const nextAvatar = randomAvatarUrl(currentUser);
+    const updatedProfiles = profiles.map(profile => (
+      profile.id === currentUser.id ? { ...profile, avatarUrl: nextAvatar } : profile
+    ));
+    db.setData('playportal_profiles_v1', updatedProfiles);
+    setCurrentUser(prev => prev ? { ...prev, avatarUrl: nextAvatar } : prev);
+    window.dispatchEvent(new Event('playportal_profile_updated'));
   };
 
   const toggleFavoriteGame = (id: string, e: React.MouseEvent) => {
@@ -435,14 +494,14 @@ export default function App() {
   }[currentLanguage];
 
   return (
-    <div className="h-screen overflow-hidden bg-[#070b19] text-white flex font-sans select-none relative pb-18 sm:pb-0 w-full">
+    <div className="h-[100dvh] overflow-hidden bg-[#070b19] text-white flex font-sans select-none relative pb-18 sm:pb-0 w-full min-w-0">
       
       {/* ======================================= */}
       {/* LEFT SIDEBAR (Sticky on desktop, slide on mobile) */}
       {/* ======================================= */}
       <aside 
         id="collapsable_left_sidebar"
-        className={`shrink-0 z-48 bg-gradient-to-b from-[#182d30] via-[#101e20] to-[#050b0c] border-r border-[#224246]/70 transition-all duration-300 relative flex flex-col h-screen overflow-y-auto sticky top-0 shadow-2xl
+        className={`shrink-0 z-48 bg-gradient-to-b from-[#182d30] via-[#101e20] to-[#050b0c] border-r border-[#224246]/70 transition-all duration-300 flex flex-col h-[100dvh] overflow-y-auto top-0 shadow-2xl
           ${isSidebarCollapsed ? 'w-16' : 'w-64'}
           ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 w-64 translate-x-0' : 'fixed md:sticky md:flex -translate-x-full md:translate-x-0'}
         `}
@@ -772,10 +831,10 @@ export default function App() {
       {/* ======================================= */}
       {/* RIGHT MAIN CONTAINER (Flex layout column) */}
       {/* ======================================= */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+      <div className="flex-1 flex flex-col min-w-0 h-[100dvh] overflow-y-auto">
 
         {/* 1. Header Navigation Bar */}
-        <header className="sticky top-0 z-40 bg-[#0a0f24] border-b border-blue-950 p-3 flex justify-between items-center shadow-lg">
+        <header className="sticky top-0 z-40 bg-[#0a0f24] border-b border-blue-950 p-2.5 sm:p-3 flex justify-between items-center gap-2 shadow-lg">
           
           <div className="flex items-center">
             {/* Hamburger trigger menu for mobile layout */}
@@ -791,7 +850,7 @@ export default function App() {
 
 
         {/* User wallet balance quick access / login triggers */}
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
           {/* Light/Dark Toggle */}
           <button
             onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
@@ -806,47 +865,163 @@ export default function App() {
           </button>
 
           {currentUser && currentWallet ? (
-            <div className="flex items-center gap-1.5 bg-[#0e1938] border border-blue-900 rounded-full pl-3 pr-1 py-1 text-xs">
-              <div className="font-mono text-slate-300">
-                <span className="text-[10px] text-slate-500">BAL </span>
-                <span className="text-green-400 font-black">৳{currentWallet.balance.toLocaleString()}</span>
+            <div className="relative flex min-w-0 items-center gap-1.5 sm:gap-2">
+              <div className="hidden sm:flex items-center gap-1.5">
+                <button
+                  onClick={() => openPersonalCenter('deposit')}
+                  className="px-3 py-2 rounded-xl bg-gradient-to-b from-yellow-300 to-amber-500 text-slate-950 border border-yellow-200/60 font-black text-[11px] uppercase shadow-md cursor-pointer hover:brightness-110"
+                >
+                  Deposit
+                </button>
+                <button
+                  onClick={() => routeToDashboard('withdraw')}
+                  className="px-3 py-2 rounded-xl bg-[#123743] hover:bg-[#174a56] text-slate-100 border border-cyan-700/60 font-black text-[11px] uppercase shadow-md cursor-pointer"
+                >
+                  Withdraw
+                </button>
               </div>
-              <button 
-                onClick={() => handleMainTabChange('wallet')}
-                className="w-6 h-6 rounded-full bg-yellow-400 hover:bg-yellow-300 text-slate-950 flex items-center justify-center font-bold font-mono shadow-xs cursor-pointer"
-                title="View Wallet Dashboard"
+
+              <div className="flex min-w-0 items-center gap-1 rounded-full bg-[#102c39] border border-cyan-900/60 pl-1.5 pr-1.5 py-1 text-xs shadow-inner">
+                <button
+                  type="button"
+                  onClick={() => openPersonalCenter('profile')}
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-yellow-400 text-slate-950 shadow-[0_0_12px_rgba(250,204,21,0.35)] cursor-pointer"
+                  title="Open wallet"
+                >
+                  <Coins size={15} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => openPersonalCenter('profile')}
+                  className="hidden min-[360px]:block min-w-0 px-1 font-mono text-slate-100 cursor-pointer"
+                  title="Open wallet"
+                >
+                  <span className="text-[11px] sm:text-sm font-black">
+                    {isBalanceVisible ? `৳ ${currentWallet.balance.toLocaleString()}` : '৳ ••••'}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsBalanceVisible(prev => !prev)}
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-slate-200 hover:bg-white/10 cursor-pointer"
+                  title={isBalanceVisible ? 'Hide balance' : 'Show balance'}
+                >
+                  {isBalanceVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={syncActiveUser}
+                  className="hidden min-[360px]:grid h-7 w-7 shrink-0 place-items-center rounded-full text-slate-200 hover:bg-white/10 cursor-pointer"
+                  title="Refresh wallet"
+                >
+                  <RefreshCw size={15} />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsProfileMenuOpen(prev => !prev)}
+                className="flex shrink-0 items-center gap-1 rounded-full p-0.5 pr-1.5 hover:bg-white/10 transition-colors cursor-pointer"
+                title="Open profile menu"
               >
-                +
+                <img
+                  src={getProfileAvatarUrl(currentUser)}
+                  alt={`${currentUser.username} profile`}
+                  className="h-10 w-10 sm:h-11 sm:w-11 rounded-full border-2 border-yellow-400/50 object-cover bg-[#102c39]"
+                  referrerPolicy="no-referrer"
+                />
+                <ChevronDown size={17} className={`text-slate-200 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
               </button>
+
+              {isProfileMenuOpen && (
+                <>
+                  <button
+                    type="button"
+                    aria-label="Close profile menu"
+                    onClick={() => setIsProfileMenuOpen(false)}
+                    className="fixed inset-0 z-30 cursor-default bg-transparent"
+                  />
+                  <div className="absolute right-0 top-[calc(100%+0.75rem)] z-50 w-[min(22rem,calc(100vw-1rem))] overflow-hidden rounded-2xl border border-cyan-100/70 bg-[#173f43] shadow-[0_24px_60px_rgba(0,0,0,0.45)] preserve-dark-bg-text">
+                    <div className="relative p-5 sm:p-6">
+                      <div className="flex items-center gap-4">
+                        <div className="relative shrink-0">
+                          <img
+                            src={getProfileAvatarUrl(currentUser)}
+                            alt={`${currentUser.username} profile large`}
+                            className="h-24 w-24 rounded-full border-4 border-[#214f54] object-cover bg-[#102c39]"
+                            referrerPolicy="no-referrer"
+                          />
+                          <button
+                            type="button"
+                            onClick={refreshCurrentAvatar}
+                            className="absolute -left-1 top-0 grid h-10 w-10 place-items-center rounded-full bg-yellow-400 text-slate-950 shadow-lg hover:bg-yellow-300 cursor-pointer"
+                            title="Random profile picture"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <span className="absolute -bottom-1 right-0 grid h-12 w-12 place-items-center rounded-full border-4 border-[#173f43] bg-gradient-to-br from-yellow-300 to-amber-500 text-slate-950 shadow-lg">
+                            <Crown size={24} />
+                          </span>
+                        </div>
+
+                        <div className="min-w-0">
+                          <h3 className="break-all text-xl font-black text-white">{currentUser.username}</h3>
+                          <p className="mt-1 text-[11px] font-mono uppercase tracking-widest text-cyan-100/70">{currentUser.role} account</p>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 space-y-2 text-slate-100">
+                        <button type="button" onClick={() => openPersonalCenter('profile')} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold hover:bg-white/10 cursor-pointer">
+                          <UserCircle size={22} className="text-blue-300" />
+                          <span>আমার অ্যাকাউন্ট</span>
+                        </button>
+                        <button type="button" onClick={() => openPersonalCenter('deposit')} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold hover:bg-white/10 cursor-pointer">
+                          <ArrowUpCircle size={22} className="text-emerald-300" />
+                          <span>ডিপোজিট করুন</span>
+                        </button>
+                        <button type="button" onClick={() => routeToDashboard('withdraw')} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold hover:bg-white/10 cursor-pointer">
+                          <ArrowDownCircle size={22} className="text-amber-300" />
+                          <span>উত্তোলন করুন</span>
+                        </button>
+                        <button type="button" onClick={() => routeToDashboard('history')} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold hover:bg-white/10 cursor-pointer">
+                          <Gamepad2 size={22} className="text-rose-300" />
+                          <span>বেটিং রেকর্ড</span>
+                        </button>
+                        <button type="button" onClick={() => routeToDashboard('history')} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold hover:bg-white/10 cursor-pointer">
+                          <ReceiptText size={22} className="text-pink-300" />
+                          <span>অ্যাকাউন্ট রেকর্ড</span>
+                        </button>
+                        <button type="button" onClick={() => routeToDashboard('invite')} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold hover:bg-white/10 cursor-pointer">
+                          <Users size={22} className="text-cyan-300" />
+                          <span>অ্যাফিলিয়েট / রেফার</span>
+                        </button>
+                        <button type="button" onClick={handleLogout} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-bold text-red-200 hover:bg-red-500/15 cursor-pointer">
+                          <LogOut size={22} className="text-red-400" />
+                          <span>সাইন আউট</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 id="login_trigger_btn"
                 onClick={() => { setAuthTabSelected('login'); setIsAuthOpen(true); }}
-                className="px-4 py-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-950 font-black text-xs uppercase tracking-wider hover:brightness-110 shadow-md cursor-pointer"
+                className="px-3 sm:px-4 py-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-950 font-black text-[11px] sm:text-xs uppercase tracking-wider hover:brightness-110 shadow-md cursor-pointer"
               >
                 SIGN IN
               </button>
               <button
                 id="register_trigger_btn"
                 onClick={() => { setAuthTabSelected('register'); setIsAuthOpen(true); }}
-                className="px-4 py-1.5 rounded-full bg-[#0e1938] hover:bg-[#152554] border border-blue-900/60 text-yellow-400 font-extrabold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                className="px-3 sm:px-4 py-1.5 rounded-full bg-[#0e1938] hover:bg-[#152554] border border-blue-900/60 text-yellow-400 font-extrabold text-[11px] sm:text-xs uppercase tracking-wider transition-all cursor-pointer"
               >
                 REGISTER
               </button>
             </div>
-          )}
-
-          {/* Quick logout icon if logged in */}
-          {currentUser && (
-            <button
-              onClick={handleLogout}
-              className="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-black rounded-lg text-xs transition-all cursor-pointer shadow-[0_0_10px_rgba(239,68,68,0.3)] hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]"
-              title="Leave account session"
-            >
-              LOGOUT
-            </button>
           )}
         </div>
       </header>
@@ -876,11 +1051,11 @@ export default function App() {
       </div>
 
       {/* 2. Main Body Grid Wrapper */}
-      <main className="flex-1 max-w-5xl w-full mx-auto p-3 space-y-4">
+      <main className="flex-1 max-w-5xl w-full min-w-0 mx-auto p-2.5 sm:p-3 space-y-4">
         
         {/* Banner Announcement Carousel (Only displayed on Lobby landing page) */}
         {currentViewTab === 'lobby' && banners.length > 0 && (
-          <div className="relative rounded-2xl overflow-hidden shadow-lg border border-blue-950 bg-slate-950 h-40 md:h-56 group">
+          <div className="relative rounded-2xl overflow-hidden shadow-lg border border-blue-950 bg-slate-950 h-32 sm:h-40 md:h-56 group">
             
             {/* Slide renderer */}
             {(() => {
@@ -915,7 +1090,7 @@ export default function App() {
                           src={fullImageSrc}
                           alt={slide.title || 'M71 Promotion'}
                           referrerPolicy="no-referrer"
-                          className="w-full h-full object-fill"
+                          className="w-full h-full object-cover sm:object-fill"
                         />
                         {slide.promoCode && (
                           <div className="absolute bottom-3 left-4 md:bottom-4 md:left-6 z-15">
@@ -1101,19 +1276,19 @@ export default function App() {
         {/* 3. Progressive Jackpots Ticker (Always exciting to view!) */}
         {currentViewTab === 'lobby' && (
           <div className="bg-[#0e1938] border border-yellow-500/20 rounded-xl p-3 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-[0_0_15px_rgba(234,179,8,0.06)]">
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 items-center gap-2">
               <span className="p-1.5 bg-yellow-400/10 text-yellow-400 rounded-lg">
                 <TrendingUp size={16} className="animate-bounce" />
               </span>
               <div>
                 <span className="text-[9px] text-slate-400 uppercase font-bold font-mono tracking-widest block">{t.jackpotTitle}</span>
-                <p className="text-xs text-slate-300 leading-none">{t.jackpotSub}</p>
+                <p className="text-xs text-slate-300 leading-snug">{t.jackpotSub}</p>
               </div>
             </div>
             
             {/* Pulsing visual ticker count */}
-            <div className="bg-slate-950 px-4 py-1.5 rounded-lg border border-blue-900/40 text-center">
-              <span className="font-mono text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 tracking-wider">
+            <div className="w-full sm:w-auto bg-slate-950 px-3 sm:px-4 py-1.5 rounded-lg border border-blue-900/40 text-center">
+              <span className="font-mono text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 tracking-wider">
                 ৳{jackpotPoolValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
@@ -1179,13 +1354,13 @@ export default function App() {
               </div>
 
               {/* Toggles */}
-              <div className="flex gap-2 w-full md:w-auto">
+              <div className="grid grid-cols-1 min-[390px]:grid-cols-2 gap-2 w-full md:w-auto">
                 <button
                   onClick={() => {
                     setShowFavoritesOnly(prev => !prev);
                     setShowRecentlyPlayedOnly(false);
                   }}
-                  className={`flex-1 py-2 px-3 rounded-lg font-bold border transition-all flex items-center justify-center gap-1.5 ${
+                  className={`py-2 px-3 rounded-lg font-bold border transition-all flex items-center justify-center gap-1.5 ${
                     showFavoritesOnly 
                       ? 'bg-red-500/10 border-red-500 text-red-400 font-extrabold shadow-xs' 
                       : 'bg-transparent border-blue-950 text-slate-400 hover:text-slate-200'
@@ -1200,7 +1375,7 @@ export default function App() {
                     setShowRecentlyPlayedOnly(prev => !prev);
                     setShowFavoritesOnly(false);
                   }}
-                  className={`flex-1 py-2 px-3 rounded-lg font-bold border transition-all flex items-center justify-center gap-1 ${
+                  className={`py-2 px-3 rounded-lg font-bold border transition-all flex items-center justify-center gap-1 ${
                     showRecentlyPlayedOnly 
                       ? 'bg-blue-600/10 border-blue-500 text-blue-300 font-extrabold shadow-xs' 
                       : 'bg-transparent border-blue-950 text-slate-400 hover:text-slate-200'
@@ -1213,7 +1388,7 @@ export default function App() {
 
             {/* Games grid lobby renderer */}
             {filteredGames.length === 0 ? (
-              <div className="p-12 text-center bg-[#101935]/30 rounded-xl border border-blue-950 space-y-2">
+              <div className="p-6 sm:p-12 text-center bg-[#101935]/30 rounded-xl border border-blue-950 space-y-2">
                 <AlertCircle size={24} className="mx-auto text-yellow-400 animate-bounce" />
                 <p className="text-xs text-slate-500">No games matched your query category, search text, or favorites logs.</p>
                 <button
@@ -1229,21 +1404,21 @@ export default function App() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(136px,1fr))] sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
                 {filteredGames.map((game) => (
                   <div
                     key={game.id}
                     onClick={() => launchGame(game)}
-                    className="relative bg-linear-to-b from-[#101935] to-[#0a0f24] rounded-2xl overflow-hidden border border-blue-950 hover:border-yellow-400/40 cursor-pointer shadow-md group transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(255,215,0,0.1)]"
+                    className="relative min-w-0 bg-linear-to-b from-[#101935] to-[#0a0f24] rounded-2xl overflow-hidden border border-blue-950 hover:border-yellow-400/40 cursor-pointer shadow-md group transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(255,215,0,0.1)]"
                   >
                     
                     {/* Visual Art Box */}
-                    <div className="h-28 bg-[#090f23] relative flex items-center justify-center text-center p-3 overflow-hidden select-none">
+                    <div className="aspect-[1.24/1] min-h-24 max-h-32 bg-[#090f23] relative flex items-center justify-center text-center p-3 overflow-hidden select-none">
                       {/* Ambient background blur circles */}
                       <div className="absolute w-20 h-20 rounded-full bg-blue-600/10 blur-xl"></div>
                       
                       {/* Symbol representation character */}
-                      <span className="text-4xl filter drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)] z-10 font-sans transform group-hover:scale-115 transition-transform duration-300">
+                      <span className="text-3xl sm:text-4xl filter drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)] z-10 font-sans transform group-hover:scale-115 transition-transform duration-300">
                         {(game.imageUrl && typeof game.imageUrl === 'string') ? game.imageUrl.split(' ')[0] : '🎮'}
                       </span>
 
@@ -1266,18 +1441,18 @@ export default function App() {
                       </button>
 
                       {/* Game provider small ribbon */}
-                      <span className="absolute bottom-1.5 left-2 z-10 text-[8px] bg-slate-950/80 px-1.5 py-0.5 rounded border border-blue-950 text-slate-400 font-mono tracking-wider uppercase">
+                      <span className="absolute bottom-1.5 left-2 right-2 z-10 text-[7.5px] bg-slate-950/80 px-1.5 py-0.5 rounded border border-blue-950 text-slate-400 font-mono tracking-wider uppercase truncate">
                         {game.provider}
                       </span>
                     </div>
 
                     {/* Meta/Text line */}
-                    <div className="p-3 bg-[#0a0f24] border-t border-blue-950/80 space-y-0.5">
+                    <div className="p-2.5 sm:p-3 bg-[#0a0f24] border-t border-blue-950/80 space-y-1">
                       <div className="text-[11px] font-black uppercase text-slate-200 tracking-wide truncate">
                         {game.title}
                       </div>
-                      <div className="flex justify-between items-center text-[9px] text-slate-500 font-mono">
-                        <span>Plays: {(game.playsCount + (favoriteIds.includes(game.id) ? 1 : 0)).toLocaleString()}</span>
+                      <div className="flex flex-col min-[390px]:flex-row min-[390px]:justify-between min-[390px]:items-center gap-0.5 text-[8.5px] sm:text-[9px] text-slate-500 font-mono">
+                        <span className="truncate">Plays: {(game.playsCount + (favoriteIds.includes(game.id) ? 1 : 0)).toLocaleString()}</span>
                         <span className="text-yellow-400 font-bold uppercase">DEMO PLAY</span>
                       </div>
                     </div>
@@ -1290,7 +1465,7 @@ export default function App() {
             {/* Active Promotions Section directly on the Home Page Lobby */}
             {promotions.length > 0 && (
               <div id="lobby_promotions_section" className="space-y-3 pt-2">
-                <div className="flex justify-between items-center border-b border-blue-950/50 pb-1.5">
+                <div className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between min-[430px]:items-center gap-2 border-b border-blue-950/50 pb-1.5">
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm">🧧</span>
                     <h3 className="text-xs font-black uppercase text-yellow-400 tracking-wider font-sans">
@@ -1344,35 +1519,35 @@ export default function App() {
         ) : currentViewTab === 'promo' ? (
           
           // PROMOTIONS VIEW GRID
-          <div className="space-y-4 text-white">
-            <div className="text-center">
-              <h3 className="text-lg font-black tracking-widest uppercase text-yellow-400">{t.activePromoTitle}</h3>
-              <p className="text-xs text-slate-400">Maximize your deposits utilizing the bonus codes listed below. Rewards pay bonus points automatically</p>
+          <div className="w-full min-w-0 space-y-4 text-white">
+            <div className="text-center px-1">
+              <h3 className="text-base sm:text-lg font-black tracking-widest uppercase text-yellow-400 leading-tight">{t.activePromoTitle}</h3>
+              <p className="text-[11px] sm:text-xs text-slate-400 leading-relaxed">Maximize your deposits utilizing the bonus codes listed below. Rewards pay bonus points automatically</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               {promotions.map((p) => (
                 <div 
                   key={p.id}
-                  className={`rounded-xl p-4 flex flex-col justify-between border relative min-h-48 overflow-hidden select-none bg-radial to-slate-950 border-blue-950/80 shadow-md preserve-dark-bg-text ${p.imageUrl}`}
+                  className={`min-w-0 rounded-xl p-3.5 sm:p-4 flex flex-col justify-between border relative min-h-44 sm:min-h-48 overflow-hidden select-none bg-radial to-slate-950 border-blue-950/80 shadow-md preserve-dark-bg-text ${p.imageUrl}`}
                 >
-                  <div className="space-y-2">
+                  <div className="min-w-0 space-y-2">
                     <span className="inline-block px-2.5 py-0.5 bg-yellow-400 text-slate-950 text-[9px] font-black tracking-wider rounded uppercase font-mono">
                       {p.type.toUpperCase()} BONUS
                     </span>
-                    <h4 className="text-base font-black uppercase tracking-wide text-white">{p.title}</h4>
-                    <p className="text-xs text-slate-300 leading-relaxed font-mono">{p.description}</p>
+                    <h4 className="text-sm sm:text-base font-black uppercase tracking-wide text-white leading-tight break-words">{p.title}</h4>
+                    <p className="text-[11px] sm:text-xs text-slate-300 leading-relaxed font-mono break-words">{p.description}</p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-900 flex justify-between items-center bg-slate-950/40 p-2 rounded-lg gap-2 text-xs">
-                    <div>
+                  <div className="mt-4 pt-3 border-t border-slate-900 flex flex-col min-[430px]:flex-row min-[430px]:justify-between min-[430px]:items-center bg-slate-950/40 p-2 rounded-lg gap-2 text-xs">
+                    <div className="min-w-0 w-full min-[430px]:w-auto">
                       <span className="text-[9px] text-slate-500 block uppercase font-mono">Promotion Code</span>
-                      <span className="font-bold font-mono text-yellow-400 select-all">{p.promoCode}</span>
+                      <span className="block font-bold font-mono text-yellow-400 select-all break-all">{p.promoCode}</span>
                     </div>
                     
                     <button
                       onClick={() => handlePromoGridAction(p.promoCode)}
-                      className="px-3 py-1.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black text-[10px] uppercase rounded tracking-wider cursor-pointer"
+                      className="w-full min-[430px]:w-auto px-3 py-2 min-[430px]:py-1.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-black text-[10px] uppercase rounded tracking-wider cursor-pointer"
                     >
                       CHALLENGE NOW
                     </button>
@@ -1517,6 +1692,20 @@ export default function App() {
         />
       )}
 
+      {/* Personal center account popup */}
+      {isPersonalCenterOpen && currentUser && currentWallet && (
+        <PersonalCenterModal
+          user={currentUser}
+          wallet={currentWallet}
+          avatarUrl={getProfileAvatarUrl(currentUser)}
+          initialMenu={personalCenterInitialMenu}
+          onClose={() => setIsPersonalCenterOpen(false)}
+          onChangeAvatar={refreshCurrentAvatar}
+          onLogout={handleLogout}
+          onNavigate={routeToDashboard}
+        />
+      )}
+
       {/* Play Game Modal Overlays */}
       {activeGame && currentUser && (
         activeGame.id === 'g-mines-1' || activeGame.id.includes('mines') ? (
@@ -1561,6 +1750,12 @@ export default function App() {
       {isAdminOpen && currentUser?.role === 'admin' && (
         <AdminPanel
           onBalanceChange={syncActiveUser}
+          onGoHome={() => {
+            handleMainTabChange('lobby');
+            setIsAdminOpen(false);
+            setIsAgentOpen(false);
+            setIsMobileSidebarOpen(false);
+          }}
           onClose={() => setIsAdminOpen(false)}
         />
       )}

@@ -97,12 +97,12 @@ export default function RecentWinners({ games, onPlayGame }: RecentWinnersProps)
   return (
     <div 
       id="recent_winners_container"
-      className="bg-[#173239] rounded-2xl border border-[#234d57] overflow-hidden flex flex-col md:flex-row shadow-[0_4px_24px_rgba(0,0,0,0.3)] select-none"
+      className="w-full min-w-0 bg-[#173239] rounded-2xl border border-[#234d57] overflow-hidden flex flex-col md:flex-row shadow-[0_4px_24px_rgba(0,0,0,0.3)] select-none"
     >
       {/* Left Artwork Column: 1/3 Width on screen */}
       <div 
         id="recent_winners_art_col" 
-        className="w-full md:w-[32%] bg-[#12272c] relative p-5 flex flex-col justify-end min-h-[140px] md:min-h-[220px] overflow-hidden border-b md:border-b-0 md:border-r border-[#234d57]/60"
+        className="w-full md:w-[32%] bg-[#12272c] relative p-4 sm:p-5 flex flex-col justify-end min-h-[112px] sm:min-h-[140px] md:min-h-[220px] overflow-hidden border-b md:border-b-0 md:border-r border-[#234d57]/60"
       >
         {/* Background Image generated exactly for the app */}
         <div className="absolute inset-0 z-0">
@@ -119,10 +119,10 @@ export default function RecentWinners({ games, onPlayGame }: RecentWinnersProps)
 
         {/* Text Area matched explicitly with the Bengali reference in the image */}
         <div className="relative z-10 space-y-1 mt-auto">
-          <h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-100 via-yellow-400 to-amber-500 tracking-tighter leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] font-sans">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-100 via-yellow-400 to-amber-500 tracking-tighter leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] font-sans">
             সাম্প্রতিক
           </h2>
-          <h2 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-amber-300 to-yellow-500 tracking-tighter leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] font-sans">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 via-amber-300 to-yellow-500 tracking-tighter leading-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] font-sans">
             বিজয়ী
           </h2>
           <p className="text-[9px] font-mono tracking-widest text-[#699a9e] uppercase block mt-1.5 font-bold">
@@ -134,7 +134,7 @@ export default function RecentWinners({ games, onPlayGame }: RecentWinnersProps)
       {/* Right Column: Autoscrolling Winners Marquee Table */}
       <div 
         id="recent_winners_feed_col"
-        className="flex-1 bg-[#152e35]/30 p-3 relative h-[180px] md:h-[220px] overflow-hidden"
+        className="min-w-0 flex-1 shrink-0 bg-[#152e35]/30 p-2.5 sm:p-3 relative h-[180px] max-h-[180px] md:h-[220px] md:max-h-[220px] overflow-hidden"
       >
         {/* Continuous upward animation container */}
         <div className="h-full overflow-hidden relative">
@@ -148,12 +148,12 @@ export default function RecentWinners({ games, onPlayGame }: RecentWinnersProps)
             {scrollList.map((winner, idx) => (
               <div 
                 key={`${winner.id}-${idx}`}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-[#1d3c44] border border-[#2d5c66] hover:border-yellow-400/40 hover:bg-[#224750] transition-colors gap-3 cursor-pointer group"
+                className="flex min-w-0 items-center justify-between p-2 sm:p-2.5 rounded-xl bg-[#1d3c44] border border-[#2d5c66] hover:border-yellow-400/40 hover:bg-[#224750] transition-colors gap-2 sm:gap-3 cursor-pointer group"
                 onClick={() => handleGameNameClick(winner.gameId)}
               >
                 {/* Left side: shiny medal badge */}
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 shrink-0 flex items-center justify-center relative bg-gradient-to-b from-amber-300 via-yellow-400 to-amber-500 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.4)]">
+                <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center relative bg-gradient-to-b from-amber-300 via-yellow-400 to-amber-500 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.4)]">
                     {/* Tiny Ribbon Layer */}
                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border border-yellow-200 shadow-xs">
                       <span className="text-[7px] text-white font-black font-sans">★</span>
@@ -163,16 +163,16 @@ export default function RecentWinners({ games, onPlayGame }: RecentWinnersProps)
                   </div>
 
                   {/* Username & clickable game name link */}
-                  <div className="space-y-0.5">
+                  <div className="min-w-0 space-y-0.5">
                     <span className="text-xs font-bold text-slate-300 block font-mono">{winner.username}</span>
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
                         handleGameNameClick(winner.gameId);
                       }}
-                      className="text-[11px] font-bold text-yellow-400 hover:text-yellow-300 transition-colors uppercase flex items-center gap-1 text-left font-sans cursor-pointer group-hover:underline"
+                      className="max-w-full text-[10px] sm:text-[11px] font-bold text-yellow-400 hover:text-yellow-300 transition-colors uppercase flex items-center gap-1 text-left font-sans cursor-pointer group-hover:underline"
                     >
-                      <span>{winner.gameTitleBn}</span>
+                      <span className="min-w-0 truncate">{winner.gameTitleBn}</span>
                       {/* glowing play button dot */}
                       <span className="w-3.5 h-3.5 rounded-full bg-red-600 text-white flex items-center justify-center text-[7px] scale-90 group-hover:bg-red-500 shadow-sm leading-none shrink-0 font-bold">▶</span>
                     </button>
@@ -180,9 +180,9 @@ export default function RecentWinners({ games, onPlayGame }: RecentWinnersProps)
                 </div>
 
                 {/* Right side: Golden Coin & Amount */}
-                <div className="bg-[#12272c] px-3.5 py-1.5 rounded-full border border-[#234d57]/60 flex items-center gap-1.5 shrink-0 min-w-[95px] justify-end shadow-inner">
-                  <span className="text-sm select-none">🪙</span>
-                  <span className="font-mono text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-amber-300">
+                <div className="bg-[#12272c] px-2.5 sm:px-3.5 py-1.5 rounded-full border border-[#234d57]/60 flex items-center gap-1 shrink-0 min-w-[78px] sm:min-w-[95px] justify-end shadow-inner">
+                  <span className="text-xs sm:text-sm select-none">🪙</span>
+                  <span className="font-mono text-[10px] sm:text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-amber-300">
                     ৳{winner.amount.toLocaleString(undefined, { minimumFractionDigits: winner.amount % 1 === 0 ? 0 : 1 })}
                   </span>
                 </div>

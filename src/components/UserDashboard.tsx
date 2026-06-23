@@ -287,60 +287,60 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
   const merchantUsdt = 'TR7NHqdjE41B755b6999L8SKZSw7FSS33t (TRC-20 Network)';
 
   return (
-    <div id="user_dashboard_wrapper" className="p-4 max-w-2xl mx-auto space-y-5 text-white">
+    <div id="user_dashboard_wrapper" className="w-full min-w-0 p-2.5 sm:p-4 max-w-2xl mx-auto space-y-5 text-white">
       
       {/* Wallet Balance Hero Card */}
-      <div className="bg-gradient-to-br from-[#101935] to-[#0a0f24] rounded-2xl p-5 border border-blue-900 shadow-[0_4px_20px_rgba(30,58,138,0.3)]">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
+      <div className="bg-gradient-to-br from-[#101935] to-[#0a0f24] rounded-2xl p-4 sm:p-5 border border-blue-900 shadow-[0_4px_20px_rgba(30,58,138,0.3)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4">
+          <div className="flex min-w-0 items-center gap-2">
             <span className="p-2 bg-yellow-400/10 rounded-lg text-yellow-400">
               <User size={18} />
             </span>
             <div>
-              <h3 className="text-sm font-bold uppercase text-slate-300">{profile.username}</h3>
-              <p className="text-[10px] text-blue-400 font-mono">ID: {profile.id} • {profile.role.toUpperCase()}</p>
+              <h3 className="text-sm font-bold uppercase text-slate-300 break-words">{profile.username}</h3>
+              <p className="text-[10px] text-blue-400 font-mono break-all">ID: {profile.id} • {profile.role.toUpperCase()}</p>
             </div>
           </div>
-          <span className="text-[10px] bg-blue-950 px-2 py-0.5 rounded-full border border-blue-900 text-blue-300 font-mono">
+          <span className="w-fit text-[10px] bg-blue-950 px-2 py-0.5 rounded-full border border-blue-900 text-blue-300 font-mono">
             Joined: {new Date(profile.createdAt).toLocaleDateString()}
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 border-t border-blue-950/80 pt-4">
+        <div className="grid grid-cols-1 min-[390px]:grid-cols-2 gap-3 sm:gap-4 border-t border-blue-950/80 pt-4">
           <div>
             <span className="text-[10px] text-slate-400 uppercase block mb-0.5">WITHDRAWABLE CASH</span>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-black text-green-400 font-mono">৳{wallet.balance.toLocaleString()}</span>
+              <span className="text-xl sm:text-2xl font-black text-green-400 font-mono break-all">৳{wallet.balance.toLocaleString()}</span>
               <span className="text-[10px] text-slate-400">BDT</span>
             </div>
           </div>
-          <div className="border-l border-blue-950/80 pl-4">
+          <div className="min-[390px]:border-l border-blue-950/80 min-[390px]:pl-4">
             <span className="text-[10px] text-slate-400 uppercase block mb-0.5">PROMO BONUS</span>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-black text-yellow-400 font-mono">৳{wallet.bonusBalance.toLocaleString()}</span>
+              <span className="text-xl sm:text-2xl font-black text-yellow-400 font-mono break-all">৳{wallet.bonusBalance.toLocaleString()}</span>
               <span className="text-[10px] text-slate-400">BDT</span>
             </div>
           </div>
         </div>
 
         {/* Quick specs lines */}
-        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[10px] text-slate-400 font-mono bg-[#060a17]/60 p-2 rounded-lg border border-blue-900/20">
+        <div className="mt-4 grid grid-cols-1 min-[390px]:grid-cols-3 gap-2 text-center text-[10px] text-slate-400 font-mono bg-[#060a17]/60 p-2 rounded-lg border border-blue-900/20">
           <div>
             <span className="block text-slate-500 text-[8px] uppercase">Wagered</span>
             <span className="text-slate-300 font-bold">৳{wallet.totalWagered.toLocaleString()}</span>
           </div>
-          <div className="border-l border-blue-950">
+          <div className="min-[390px]:border-l border-blue-950">
             <span className="block text-slate-500 text-[8px] uppercase">Deposited</span>
             <span className="text-slate-300 font-bold">৳{wallet.totalDeposit.toLocaleString()}</span>
           </div>
-          <div className="border-l border-blue-950">
+          <div className="min-[390px]:border-l border-blue-950">
             <span className="block text-slate-500 text-[8px] uppercase">Withdrawn</span>
             <span className="text-slate-300 font-bold">৳{wallet.totalWithdraw.toLocaleString()}</span>
           </div>
         </div>
 
         {/* Action triggers */}
-        <div className="mt-4 grid grid-cols-2 gap-2">
+        <div className="mt-4 grid grid-cols-1 min-[390px]:grid-cols-2 gap-2">
           <button
             onClick={() => onSubPageChange('deposit')}
             className={`py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition-all ${
@@ -365,7 +365,7 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
       </div>
 
       {/* Menu Sub-tabs navigation */}
-      <div className="flex bg-[#0a0f24] p-1 rounded-lg border border-blue-950 text-xs overflow-x-auto gap-1">
+      <div className="grid grid-flow-col auto-cols-max bg-[#0a0f24] p-1 rounded-lg border border-blue-950 text-xs overflow-x-auto gap-1">
         {[
           { key: 'profile', label: `👤 ${t.profile}` },
           { key: 'history', label: `📊 ${t.history}` },
@@ -400,29 +400,29 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
 
       {/* 1. Account Info Card */}
       {activeMenu === 'profile' && (
-        <div className="bg-[#101935]/40 border border-blue-950 p-5 rounded-xl space-y-4">
+        <div className="bg-[#101935]/40 border border-blue-950 p-3.5 sm:p-5 rounded-xl space-y-4">
           <h4 className="text-sm font-bold uppercase tracking-wider text-yellow-400 border-b border-blue-950 pb-2">{t.profile}</h4>
           
           <div className="space-y-3 text-xs font-mono">
-            <div className="flex justify-between py-1.5 border-b border-blue-950/40">
+            <div className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between gap-1 py-1.5 border-b border-blue-950/40">
               <span className="text-slate-400">{t.username}</span>
-              <span className="text-slate-200 font-bold">{profile.username}</span>
+              <span className="text-slate-200 font-bold break-all">{profile.username}</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-blue-950/40">
+            <div className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between gap-1 py-1.5 border-b border-blue-950/40">
               <span className="text-slate-400">{t.phone}</span>
-              <span className="text-slate-200">{profile.phone}</span>
+              <span className="text-slate-200 break-all">{profile.phone}</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-blue-950/40">
+            <div className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between gap-1 py-1.5 border-b border-blue-950/40">
               <span className="text-slate-400">Registered Email</span>
-              <span className="text-slate-200">{profile.email}</span>
+              <span className="text-slate-200 break-all min-[430px]:text-right">{profile.email}</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-blue-950/40">
+            <div className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between gap-1 py-1.5 border-b border-blue-950/40">
               <span className="text-slate-400">{t.vipLevel}</span>
-              <span className="text-yellow-400 font-bold">{profile.role.toUpperCase()} LEVEL</span>
+              <span className="text-yellow-400 font-bold break-all">{profile.role.toUpperCase()} LEVEL</span>
             </div>
-            <div className="flex justify-between py-1.5">
+            <div className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between gap-1 py-1.5">
               <span className="text-slate-400">Referral Code</span>
-              <span className="text-blue-300">{profile.referralCode}</span>
+              <span className="text-blue-300 break-all">{profile.referralCode}</span>
             </div>
           </div>
 
@@ -441,20 +441,20 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
 
       {/* 2. Deposit Channel Panel */}
       {activeMenu === 'deposit' && (
-        <div className="bg-[#101935]/60 border border-blue-900/60 p-5 rounded-xl space-y-4">
+        <div className="bg-[#101935]/60 border border-blue-900/60 p-3.5 sm:p-5 rounded-xl space-y-4">
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-yellow-400">Manual Payment Integration Channel</h4>
             <p className="text-[10px] text-slate-400">Deposit is instant but requires a manual reference check by admins to verify your transaction receipt.</p>
           </div>
 
           {/* Payment Method Selectors */}
-          <div className="flex gap-2 text-xs">
+          <div className="grid grid-cols-1 min-[390px]:grid-cols-3 gap-2 text-xs">
             {['gcash', 'bank', 'usdt'].map((ch) => (
               <button
                 key={ch}
                 type="button"
                 onClick={() => setDepositChannel(ch as any)}
-                className={`flex-1 py-2 text-center rounded-lg font-bold border transition-all ${
+                className={`py-2 text-center rounded-lg font-bold border transition-all ${
                   depositChannel === ch 
                     ? 'bg-blue-600/10 border-yellow-400 text-yellow-400 font-black' 
                     : 'bg-transparent border-blue-950 text-slate-400 hover:text-slate-200'
@@ -472,7 +472,7 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
             
             <div className="p-2.5 bg-[#060a17] rounded-md border border-blue-950 font-mono text-center relative">
               <span className="text-slate-400 text-[10px] block uppercase mb-1">Send funds to:</span>
-              <span className="text-yellow-400 font-bold select-all">
+              <span className="text-yellow-400 font-bold select-all break-all">
                 {depositChannel === 'gcash' ? merchantGcash : depositChannel === 'bank' ? merchantBank : merchantUsdt}
               </span>
             </div>
@@ -532,13 +532,13 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
 
       {/* 3. Withdraw Portal Panel */}
       {activeMenu === 'withdraw' && (
-        <div className="bg-[#101935]/60 border border-blue-900/60 p-5 rounded-xl space-y-4">
+        <div className="bg-[#101935]/60 border border-blue-900/60 p-3.5 sm:p-5 rounded-xl space-y-4">
           <div>
             <h4 className="text-sm font-bold uppercase tracking-wider text-yellow-400">Withdraw Cash Wallet Assets</h4>
             <p className="text-[10px] text-slate-400">Required: Manual bank or GCash details matching your original profile to receive funds securely.</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-xs">
+          <div className="grid grid-cols-1 min-[390px]:grid-cols-3 gap-2 text-xs">
             {['gcash', 'bank', 'usdt'].map((ch) => (
               <button
                 key={ch}
@@ -570,7 +570,7 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
             </div>
 
             {withdrawChannel !== 'usdt' ? (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
                   <label className="text-[10px] uppercase text-slate-400 font-bold block mb-1">Recipient account Name</label>
                   <input
@@ -617,8 +617,8 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
 
       {/* 4. Financial History Records */}
       {activeMenu === 'history' && (
-        <div className="bg-[#101935]/40 border border-blue-950 p-4 rounded-xl space-y-4">
-          <div className="flex justify-between items-center border-b border-blue-950 pb-2">
+        <div className="bg-[#101935]/40 border border-blue-950 p-3.5 sm:p-4 rounded-xl space-y-4">
+          <div className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between min-[430px]:items-center gap-2 border-b border-blue-950 pb-2">
             <h4 className="text-sm font-bold uppercase tracking-wider text-yellow-400 flex items-center gap-1.5">
               <History size={16} /> Transaction Ledger
             </h4>
@@ -630,9 +630,9 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
               <p className="text-center text-xs text-slate-500 py-6">No previous transactions logged for this profile.</p>
             ) : (
               transactions.map((tx) => (
-                <div key={tx.id} className="bg-[#060a17]/80 p-3 rounded-lg border border-blue-950 text-xs flex justify-between items-center">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                <div key={tx.id} className="bg-[#060a17]/80 p-3 rounded-lg border border-blue-950 text-xs flex flex-col gap-3 min-[430px]:flex-row min-[430px]:justify-between min-[430px]:items-center">
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className={`px-1.5 py-0.5 rounded-md font-bold text-[9px] font-mono tracking-widest uppercase ${
                         tx.type === 'deposit' ? 'bg-green-950/40 text-green-400 border border-green-500/20' : 'bg-red-950/40 text-red-400 border border-red-500/20'
                       }`}>
@@ -641,11 +641,11 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
                       <span className="text-[10px] text-slate-400 font-mono">{new Date(tx.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
                     {tx.paymentMethod && <p className="text-[10px] text-slate-400">{tx.paymentMethod}</p>}
-                    {tx.paymentDetails?.refNo && <p className="text-[9px] text-slate-500 font-mono">Ref: {tx.paymentDetails.refNo}</p>}
+                    {tx.paymentDetails?.refNo && <p className="text-[9px] text-slate-500 font-mono break-all">Ref: {tx.paymentDetails.refNo}</p>}
                     {tx.notes && <p className="text-[9px] text-slate-400 italic">"{tx.notes}"</p>}
                   </div>
 
-                  <div className="text-right space-y-1">
+                  <div className="text-left min-[430px]:text-right space-y-1">
                     <span className="text-sm font-black font-mono block">
                       {tx.type === 'deposit' ? '+' : '-'}৳{tx.amount.toLocaleString()}
                     </span>
@@ -668,9 +668,9 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
 
       {/* 5. Invite & Referral Program */}
       {activeMenu === 'invite' && (
-        <div className="bg-[#101935]/40 border border-blue-950 p-5 rounded-xl space-y-4">
+        <div className="bg-[#101935]/40 border border-blue-950 p-3.5 sm:p-5 rounded-xl space-y-4">
           <div className="text-center space-y-1">
-            <h4 className="text-sm font-bold uppercase tracking-wider text-yellow-400 flex items-center justify-center gap-1.5">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-yellow-400 flex flex-wrap items-center justify-center gap-1.5">
               <Share2 size={16} /> Golden Agent Referral Program
             </h4>
             <p className="text-xs text-slate-400">Share your custom link. Get 10% cash credits instantly on every payment your referred friends deposit!</p>
@@ -679,16 +679,16 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
           <div className="p-3 bg-slate-950 rounded-lg border border-blue-950 text-center space-y-2">
             <span className="text-[9px] text-slate-400 block font-mono">YOUR REFERRAL INVITE LINK</span>
             
-            <div className="flex bg-[#060a17] rounded-md border border-blue-950 overflow-hidden text-xs">
+            <div className="flex flex-col min-[430px]:flex-row bg-[#060a17] rounded-md border border-blue-950 overflow-hidden text-xs">
               <input
                 type="text"
                 readOnly
                 value={`${window.location.origin}?ref=${profile.referralCode}`}
-                className="w-full bg-transparent px-3 py-2 text-slate-300 font-mono border-none focus:outline-hidden"
+                className="w-full min-w-0 bg-transparent px-3 py-2 text-slate-300 font-mono border-none focus:outline-hidden"
               />
               <button
                 onClick={copyReferralCode}
-                className="px-4 bg-yellow-400 text-slate-950 font-bold text-xs flex items-center gap-1 hover:bg-yellow-300 shrink-0 cursor-pointer"
+                className="px-4 py-2 bg-yellow-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1 hover:bg-yellow-300 shrink-0 cursor-pointer"
               >
                 {copiedCode ? <Check size={14} /> : <Copy size={14} />}
                 {copiedCode ? 'COPIED' : 'COPY'}
@@ -708,8 +708,8 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
               ) : (
                 <div className="space-y-1.5 font-mono max-h-40 overflow-y-auto">
                   {recruited.map((rec, i) => (
-                    <div key={i} className="flex justify-between py-1 border-b border-blue-950/30 text-[11px]">
-                      <span className="text-slate-300">👤 {rec.username}</span>
+                    <div key={i} className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between gap-1 py-1 border-b border-blue-950/30 text-[11px]">
+                      <span className="text-slate-300 break-all">👤 {rec.username}</span>
                       <span className="text-slate-400">Date: {new Date(rec.createdAt).toLocaleDateString()}</span>
                     </div>
                   ))}
@@ -722,8 +722,8 @@ export default function UserDashboard({ userId, onBalanceChange, activeMenu, onS
 
       {/* 6. Alerts Notification Center */}
       {activeMenu === 'alerts' && (
-        <div className="bg-[#101935]/40 border border-blue-950 p-4 rounded-xl space-y-4">
-          <div className="flex justify-between items-center border-b border-blue-950 pb-2">
+        <div className="bg-[#101935]/40 border border-blue-950 p-3.5 sm:p-4 rounded-xl space-y-4">
+          <div className="flex flex-col min-[430px]:flex-row min-[430px]:justify-between min-[430px]:items-center gap-2 border-b border-blue-950 pb-2">
             <h4 className="text-sm font-bold uppercase tracking-wider text-yellow-400 flex items-center gap-1.5">
               <Bell size={16} /> Notification Inbox
             </h4>

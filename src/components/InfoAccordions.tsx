@@ -53,7 +53,7 @@ export default function InfoAccordions() {
   };
 
   return (
-    <div id="info_accordions_section" className="space-y-2 pt-4">
+    <div id="info_accordions_section" className="w-full min-w-0 space-y-2 pt-4">
       {items.map((item) => {
         const isOpen = openId === item.id;
         return (
@@ -65,9 +65,9 @@ export default function InfoAccordions() {
             <button
               type="button"
               onClick={() => toggleItem(item.id)}
-              className="w-full flex items-center justify-between p-4 text-left text-slate-100 hover:text-yellow-405 transition-colors font-sans focus:outline-hidden cursor-pointer"
+              className="w-full flex items-center justify-between gap-3 p-3.5 sm:p-4 text-left text-slate-100 hover:text-yellow-405 transition-colors font-sans focus:outline-hidden cursor-pointer"
             >
-              <span className="text-xs font-bold md:text-sm tracking-wide">
+              <span className="min-w-0 text-xs font-bold md:text-sm tracking-wide break-words">
                 {item.title}
               </span>
               <span className="text-white shrink-0 ml-4 font-black">
